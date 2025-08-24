@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Крестики-нолики</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+            width: max-content;
+            margin: 0 auto;
+        }
+        .cell {
+            background-color: #f2f2f2;
+            font-size: 2.5em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            border: 1px solid #ccc;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+        button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Крестики-нолики</h1>
+<div id="board"></div>
+<div id="status">Ход: X</div>
+<button onclick="restart()">Сбросить</button>
+
+<script>
+    const board = document.getElementById('board');
+    const status = document.getElementById('status');
+    let currentPlayer = 'X';
+    let gameActive = true;
+    let cells = Array(9).fill('');
+
+    const winPatterns = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
+    ];
+
+    function checkWinner() {
+        for (const [a, b, c] of winPatterns) {
+            if (cells[a] && cells[a] === cells[b] && cells[a] === cells[c]) {
+                status.textContent = `Победил: ${cells[a]}`;
+                gameActive = false;
+                return;
+            }
+        }
+        if (!cells.includes('')) {
+            status.textContent = "Ничья!";
+            gameActive = false;
+        }
+    }
+
+    function handleClick(i, cell) {
+        if (!gameActive || cells[i]) return;
+        cells[i] = currentPlayer;
+        cell.textContent = currentPlayer;
+        checkWinner();
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        if (gameActive) status.textContent = `Ход: ${currentPlayer}`;
+    }
+
+    function restart() {
+        cells = Array(9).fill('');
+        board.innerHTML = '';
+        gameActive = true;
+        currentPlayer = 'X';
+        status.textContent = 'Ход: X';
+        drawBoard();
+    }
+
+    function drawBoard() {
+        cells.forEach((_, i) => {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.onclick = () => handleClick(i, cell);
+            board.appendChild(cell);
+        });
+    }
+
+    drawBoard();
+</script>
+
+</body>
+</html>
